@@ -20,10 +20,8 @@ namespace ContainerTrackingWebApi.Controllers
 
         //this method inserts information about when user logined, logout etc 
         [NonAction]
-        public void insertlogData(string Username, string result,string userAgent)
+        public void insertlogData(string Username, string result, string userAgent, SqlConnection conn)
         {
-            SqlConnection conn = new SqlConnection(connection);
-            conn.Open();
             SqlCommand cmd = new SqlCommand("insert into create_log (email,login_time,logout_time,login_result,user_agent,source_ip) values(@email,@login_time,@logout_time,@login_result,@user_agent,@source_ip)", conn);
             cmd.Parameters.AddWithValue("@email", Username);
             cmd.Parameters.AddWithValue("@login_time", DateTime.Now);
@@ -36,7 +34,6 @@ namespace ContainerTrackingWebApi.Controllers
             cmd.Parameters.AddWithValue("@source_ip", myIP);
             SqlDataReader MyReader2;
             MyReader2 = cmd.ExecuteReader();
-            conn.Close();
         }
         //this method updates user logout time 
         [HttpPost]

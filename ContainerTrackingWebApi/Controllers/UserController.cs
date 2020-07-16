@@ -55,34 +55,36 @@ namespace ContainerTrackingWebApi.Controllers
             {
                 string user_id = "";
                 string user_role = "";
-                SqlConnection conn = new SqlConnection(connection);
-                conn.Open();
-                string pwd = "";
-                pwd = Base64Encode(Password);
-                SqlCommand cmd = new SqlCommand("select TOP 1 id,f_name,user_role,l_name,email from users where email='" + Username + "' and password='" + pwd + "' and status=1 order by id DESC", conn);
-                SqlDataAdapter MyAdapter = new SqlDataAdapter();
-                MyAdapter.SelectCommand = cmd;
-                DataTable dTable = new DataTable();
-                MyAdapter.Fill(dTable);
-                conn.Close();
-                var userAgent = Request.Headers["User-Agent"].ToString();
-                if (dTable.Rows.Count > 0)
+                using (SqlConnection conn = new SqlConnection(connection))
                 {
-                    foreach (DataRow item in dTable.Rows)
-                    {
-                        user_id = item["id"].ToString();
-                        user_role = item["user_role"].ToString();
-                    }
 
-                    createLog.insertlogData(Username, "SUCCESS", userAgent);//this method inserts log data 
-                    //insertlogData(Username, "FAILED");//this method inserts log data 
-                    return Ok(JsonConvert.SerializeObject(user_id + "," + user_role));
-                }
-                else
-                {
-                    createLog.insertlogData(Username, "FAILED", userAgent);//this method inserts log data 
-                    //insertlogData(Username, "FAILED");//this method inserts log data 
-                    return Ok(JsonConvert.SerializeObject(0));
+
+                    conn.Open();
+                    string pwd = "";
+                    pwd = Base64Encode(Password);
+                    SqlCommand cmd = new SqlCommand("select TOP 1 id,f_name,user_role,l_name,email from users where email='" + Username + "' and password='" + pwd + "' and status=1 order by id DESC", conn);
+                    SqlDataAdapter MyAdapter = new SqlDataAdapter();
+                    MyAdapter.SelectCommand = cmd;
+                    DataTable dTable = new DataTable();
+                    MyAdapter.Fill(dTable);
+                    var userAgent = Request.Headers["User-Agent"].ToString();
+                    if (dTable.Rows.Count > 0)
+                    {
+                        foreach (DataRow item in dTable.Rows)
+                        {
+                            user_id = item["id"].ToString();
+                            user_role = item["user_role"].ToString();
+                        }
+                        createLog.insertlogData(Username, "SUCCESS", userAgent, conn);
+                        conn.Close();
+                        return Ok(JsonConvert.SerializeObject(user_id + "," + user_role));
+                    }
+                    else
+                    {
+                        createLog.insertlogData(Username, "FAILED", userAgent, conn);
+                        conn.Close();
+                        return Ok(JsonConvert.SerializeObject(0));
+                    }
                 }
             }
             catch (Exception ex)
