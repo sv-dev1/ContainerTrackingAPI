@@ -591,7 +591,8 @@ namespace ContainerTrackingWebApi.Controllers
                                                 {
                                                     dt.Columns.Add("vessel" + i + j);
                                                 }
-                                                _ro["date" + i + j] = item.date;
+                                                //_ro["date" + i + j] = item.date;
+                                                _ro["date" + i + j] = string.Format("{0:dd-MMM-yyyy hh:mm tt}", Convert.ToDateTime(item.date));
                                                 // _ro["vessel" + i + j] = item.vessel;
                                                 _ro["description" + i + j] = item.description;
                                                 _ro["type" + i + j] = item.type;
