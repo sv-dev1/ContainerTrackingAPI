@@ -292,53 +292,49 @@ namespace ContainerTrackingWebApi.Controllers
         {
             string shipping_line2 = "";
             shipping_line1 = shipping_line1.ToLower();
-            if (shipping_line1 == "maersk")
+            switch (shipping_line1)
             {
-                shipping_line2 = "maeu";
-            }
-            if (shipping_line1 == "yang ming")
-            {
-                shipping_line2 = "YMLU";
-            }
-            if (shipping_line1 == "hapag-lloyd")
-            {
-                shipping_line2 = "HLCU";
-            }
-            if (shipping_line1 == "msc")
-            {
-                shipping_line2 = "mscu";
-            }
-            if (shipping_line1 == "cma cgm")
-            {
-                shipping_line2 = "CMDU";
-            }
-            if (shipping_line1 == "safmarine")
-            {
-                shipping_line2 = "SAFM";
-            }
-            if (shipping_line1 == "cosco")
-            {
-                shipping_line2 = "COSU";
-            }
-            if (shipping_line1 == "apl")
-            {
-                shipping_line2 = "APLU";
-            }
-            if (shipping_line1 == "zim")
-            {
-                shipping_line2 = "ZIMU";
-            }
-            if (shipping_line1 == "oocl")
-            {
-                shipping_line2 = "OOLU";
-            }
-            if (shipping_line1 == "sealand")
-            {
-                shipping_line2 = "SEJJ";
-            }
-            if (shipping_line1 == "evergreen")
-            {
-                shipping_line2 = "EGLV";
+                case "maersk":
+                    shipping_line2 = "maeu";
+                    break;
+                case "yang ming":
+                    shipping_line2 = "YMLU";
+                    break;
+                case "hapag-lloyd":
+                    shipping_line2 = "HLCU";
+                    break;
+                case "msc":
+                    shipping_line2 = "mscu";
+                    break;
+                case "cma cgm":
+                    shipping_line2 = "CMDU";
+                    break;
+                case "safmarine":
+                    shipping_line2 = "SAFM";
+                    break;
+                case "cosco":
+                    shipping_line2 = "COSU";
+                    break;
+                case "apl":
+                    shipping_line2 = "APLU";
+                    break;
+                case "zim":
+                    shipping_line2 = "ZIMU";
+                    break;
+                case "oocl":
+                    shipping_line2 = "OOLU";
+                    break;
+                case "sealand":
+                    shipping_line2 = "SEJJ";
+                    break;
+                case "evergreen":
+                    shipping_line2 = "EGLV";
+                    break;
+                case "one":
+                    shipping_line2 = "ONEY";
+                    break;
+                default:
+                    break;
             }
             return shipping_line2;
         }
