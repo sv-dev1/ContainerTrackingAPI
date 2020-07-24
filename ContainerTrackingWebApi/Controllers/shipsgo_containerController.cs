@@ -618,6 +618,11 @@ namespace ContainerTrackingWebApi.Controllers
                                         i = i + 1;
                                     }
                                 }
+                                //If destination is Null assign the last as destination.
+                                if (_ro["destination"] == DBNull.Value)
+                                {
+                                    _ro["destination"] = containerTracking.LastOrDefault()?.name;
+                                }
                                 _ro["daysbeforearrival"] = 0;
                                 DateTime dateTime = Convert.ToDateTime(_ro["arrival"]);
                                 if (dateTime < DateTime.Now)//container has reached its destination
