@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using ContainerTrackingWebApi.Models;
+using ContainerTrackingWebApi.ViewModel;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,15 +20,15 @@ namespace ContainerTrackingWebApi.Controllers
     {
         string connection = Startup.GetConnectionString();
         [HttpPost]
-        [Route("updateNotificationsdetails")]        
-        public async Task<IActionResult> updateNotificationsdetails(UserNotifications notifications)
+        [Route("updateNotificationsdetails")]
+        public async Task<IActionResult> updateNotificationsdetails(NotificationsVM notifications)
         {
             try
             {
                 SqlConnection conn = new SqlConnection(connection);
                 conn.Open();
                 string useid = "";
-                string userid = Convert.ToString(notifications.UserId);
+                string userid = Convert.ToString(notifications.user_id);
                 useid = userid.Trim('"');
                 useid = useid.Trim('/');
                 SqlCommand cmd1 = new SqlCommand("select * from user_notifications where user_id='" + useid + "' ", conn);
@@ -37,7 +38,7 @@ namespace ContainerTrackingWebApi.Controllers
                 MyAdapter.Fill(dTable);
                 if (dTable.Rows.Count == 0)
                 {
-                    SqlCommand cmd = new SqlCommand("insert into user_notifications (con_add_sts,con_add_time,dep_change_sts,dep_change_time,arr_change_sts,arr_change_time,con_del_sts,con_del_time,con_timeout_sts,con_timeout_time,created_at,user_id,updated_at,con_untilarrival_by_email,con_untilarrival_days) values (@con_add_sts,@con_add_time,@dep_change_sts,@dep_change_time,@arr_change_sts,@arr_change_time,@con_del_sts,@con_del_time,@con_timeout_sts,@con_timeout_time,@created_at,@user_id,@updated_at,@con_untilarrival_by_email,@con_untilarrival_days);", conn);
+                    SqlCommand cmd = new SqlCommand("insert into user_notifications (con_add_sts,con_add_time,dep_change_sts,dep_change_time,arr_change_sts,arr_change_time,con_del_sts,con_del_time,con_timeout_sts,con_timeout_time,created_at,user_id,updated_at,con_untilarrival_by_email,con_untilarrival_days,con_add_email,dep_change_email,arr_change_email,con_del_email,timeout_email,until_arrival_email) values (@con_add_sts,@con_add_time,@dep_change_sts,@dep_change_time,@arr_change_sts,@arr_change_time,@con_del_sts,@con_del_time,@con_timeout_sts,@con_timeout_time,@created_at,@user_id,@updated_at,@con_untilarrival_by_email,@con_untilarrival_days,  @con_add_email,@dep_change_email,@arr_change_email,@con_del_email,@timeout_email,@until_arrival_email);", conn);
                     cmd.Parameters.AddWithValue("@user_id", useid);
                     cmd.Parameters.AddWithValue("@con_add_sts", notifications.ConAddSts);
                     cmd.Parameters.AddWithValue("@con_add_time", notifications.ConAddTime);
@@ -53,14 +54,20 @@ namespace ContainerTrackingWebApi.Controllers
                     cmd.Parameters.AddWithValue("@con_untilarrival_days", notifications.ConUntilarrivalDays);
                     cmd.Parameters.AddWithValue("@created_at", DateTime.Now);
                     cmd.Parameters.AddWithValue("@updated_at", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@con_add_email", notifications.con_add_emails);
+                    cmd.Parameters.AddWithValue("@dep_change_email", notifications.dep_change_emails);
+                    cmd.Parameters.AddWithValue("@arr_change_email", notifications.arr_change_emails);
+                    cmd.Parameters.AddWithValue("@con_del_email", notifications.con_del_emails);
+                    cmd.Parameters.AddWithValue("@timeout_email", notifications.con_timeout_emails);
+                    cmd.Parameters.AddWithValue("@until_arrival_email", notifications.con_unit_emails);
                     SqlDataReader MyReader2;
-                    MyReader2 = cmd.ExecuteReader();                   
+                    MyReader2 = cmd.ExecuteReader();
                 }
                 else
                 {
                     SqlCommand cmd = new SqlCommand("update user_notifications set con_add_sts=@con_add_sts,con_add_time=@con_add_time,dep_change_sts=@dep_change_sts," +
                     "dep_change_time=@dep_change_time,arr_change_sts=@arr_change_sts,arr_change_time=@arr_change_time,con_del_sts=@con_del_sts,con_del_time=@con_del_time," +
-                    "updated_at=@updated_at,con_timeout_sts=@con_timeout_sts,con_timeout_time=@con_timeout_time,con_untilarrival_by_email=@con_untilarrival_by_email,con_untilarrival_days=@con_untilarrival_days where user_id=@id", conn);
+                    "updated_at=@updated_at,con_timeout_sts=@con_timeout_sts,con_timeout_time=@con_timeout_time,con_untilarrival_by_email=@con_untilarrival_by_email,con_untilarrival_days=@con_untilarrival_days, con_add_email=@con_add_email,dep_change_email=@dep_change_email,arr_change_email=@arr_change_email,con_del_email=@con_del_email,timeout_email=@timeout_email,until_arrival_email=@until_arrival_email where user_id=@id", conn);
                     cmd.Parameters.AddWithValue("@id", useid);
                     cmd.Parameters.AddWithValue("@con_add_sts", notifications.ConAddSts);
                     cmd.Parameters.AddWithValue("@con_add_time", notifications.ConAddTime);
@@ -75,7 +82,13 @@ namespace ContainerTrackingWebApi.Controllers
                     cmd.Parameters.AddWithValue("@con_untilarrival_by_email", notifications.ConUntilarrivalByEmail);
                     cmd.Parameters.AddWithValue("@con_untilarrival_days", notifications.ConUntilarrivalDays);
                     cmd.Parameters.AddWithValue("@updated_at", DateTime.Now);
-                    cmd.ExecuteNonQuery();                    
+                    cmd.Parameters.AddWithValue("@con_add_email", notifications.con_add_emails);
+                    cmd.Parameters.AddWithValue("@dep_change_email", notifications.dep_change_emails);
+                    cmd.Parameters.AddWithValue("@arr_change_email", notifications.arr_change_emails);
+                    cmd.Parameters.AddWithValue("@con_del_email", notifications.con_del_emails);
+                    cmd.Parameters.AddWithValue("@timeout_email", notifications.con_timeout_emails);
+                    cmd.Parameters.AddWithValue("@until_arrival_email", notifications.con_unit_emails);
+                    cmd.ExecuteNonQuery();
                 }
                 conn.Close();
                 return Ok(JsonConvert.SerializeObject(1));
@@ -92,7 +105,7 @@ namespace ContainerTrackingWebApi.Controllers
         {
             SqlConnection conn = new SqlConnection(connection);
             conn.Open();
-            UserNotifications notifications = new UserNotifications();
+            NotificationsVM notifications = new NotificationsVM();
             string user_id = "";
             user_id = userid.Trim('"');
             user_id = user_id.Trim('/');
@@ -118,7 +131,14 @@ namespace ContainerTrackingWebApi.Controllers
                     notifications.CreatedAt = Convert.ToDateTime(item["created_at"].ToString());
                     notifications.UpdatedAt = Convert.ToDateTime(item["updated_at"].ToString());
                     notifications.ConUntilarrivalByEmail = Convert.ToInt16(item["con_untilarrival_by_email"].ToString());
-                    notifications.ConUntilarrivalDays = Convert.ToInt16(item["con_untilarrival_days"].ToString());
+                    notifications.ConUntilarrivalDays = Convert.ToInt32(item["con_untilarrival_days"]);
+
+                    notifications.con_add_emails = Convert.ToString(item["con_add_email"]);
+                    notifications.dep_change_emails = Convert.ToString(item["dep_change_email"]);
+                    notifications.arr_change_emails = Convert.ToString(item["arr_change_email"]);
+                    notifications.con_del_emails = Convert.ToString(item["con_del_email"]);
+                    notifications.con_timeout_emails = Convert.ToString(item["timeout_email"]);
+                    notifications.con_unit_emails  = Convert.ToString(item["until_arrival_email"]);
                 }
             }
 

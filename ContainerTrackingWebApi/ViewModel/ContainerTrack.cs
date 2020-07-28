@@ -49,4 +49,18 @@ namespace ContainerTrackingWebApi.ViewModel
         public string date { get; set; }
         public bool actual { get; set; }
     }
+
+
+
+    public  class EventList
+    {
+        public long Location { get; set; }
+        public string Description { get; set; }
+        public string Status { get; set; }
+        public DateTime Date { get; set; }
+        public bool Actual { get; set; }
+        public string Type { get; set; }
+        public long? Vessel { get; set; }
+        public string Voyage { get; set; }
+    }
 }

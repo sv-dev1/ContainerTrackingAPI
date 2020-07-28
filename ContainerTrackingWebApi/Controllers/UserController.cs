@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using ContainerTrackingWebApi.Models;
+using ContainerTrackingWebApi.ViewModel;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -318,7 +319,7 @@ namespace ContainerTrackingWebApi.Controllers
         {
             try
             {
-                Users users = new Users
+                Models.Users users = new Models.Users
                 {
                     Id = _users.id,
                     InvitedId = Convert.ToInt32(_users.invited_id),
@@ -398,36 +399,36 @@ namespace ContainerTrackingWebApi.Controllers
                 {
                     MyReader2.Read();
                     int newRowID = Convert.ToInt32(MyReader2["id"]);
-                    ColumnsShow settings = new ColumnsShow();
-                    settings.UserId = newRowID;
-                    settings.ShipmentRef = 1;
-                    settings.Origin = 1;
-                    settings.ContainerType = 1;
-                    settings.Destination = 1;
-                    settings.ContainerNo = 1;
-                    settings.Departure = 1;
-                    settings.Arrival = 1;
-                    settings.ShippingLine = 1;
-                    settings.Status = 1;
-                    settings.EarlyDelay = 1;
-                    settings.FromCountry = 1;
-                    settings.ToCountry = 1;
-                    settings.TransitTime = 1;
-                    settings.FirstEta = 1;
-                    settings.BlReferenceNo = 1;
-                    settings.TransitPorts = 1;
-                    settings.GetoutDate = 1;
-                    settings.EmptyReturnDate = 1;
-                    settings.ShipmentBy = 1;
-                    settings.FirstArrival = 1;
-                    settings.DaysBeforeArrival = 1;
-                    settings.Vesselname = 1;
+                    SettingsVM settings = new SettingsVM();
+                    settings.user_id = newRowID;
+                    settings.shipment_ref = 1;
+                    settings.origin = 1;
+                    settings.container_type = 1;
+                    settings.destination = 1;
+                    settings.container_no = 1;
+                    settings.departure = 1;
+                    settings.arrival = 1;
+                    settings.shipping_line = 1;
+                    settings.status = 1;
+                    settings.early_delay = 1;
+                    settings.from_country = 1;
+                    settings.to_country = 1;
+                    settings.transit_time = 1;
+                    settings.first_eta = 1;
+                    settings.bl_reference_no = 1;
+                    settings.transit_ports = 1;
+                    settings.getout_date = 1;
+                    settings.empty_return_date = 1;
+                    settings.shipment_by = 1;
+                    settings.first_arrival = 1;
+                    settings.days_before_arrival = 1;
+                    settings.vessel_name = 1;
                     ColumnsShowController obj = new ColumnsShowController();
                     await obj.updateSettingsdetails(settings);
 
-                    UserNotifications notifications = new UserNotifications();
+                    NotificationsVM notifications = new NotificationsVM();
                     NotificationsEmails notificationsemails = new NotificationsEmails();
-                    notifications.UserId = newRowID;
+                    notifications.user_id = Convert.ToString(newRowID);
                     notifications.ConAddSts = 1;
                     notifications.ConAddTime = 1;
                     notifications.DepChangeSts = 1;
@@ -525,13 +526,13 @@ namespace ContainerTrackingWebApi.Controllers
         {
             SqlConnection conn = new SqlConnection(connection);
             conn.Open();
-            List<Users> user = new List<Users>();
+            List<Models.Users> user = new List<Models.Users>();
             SqlCommand cmd = new SqlCommand("select * from users", conn);
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    Users user1 = new Users();
+                    Models.Users user1 = new Models.Users();
                     user1.Id = Convert.ToInt32(reader["id"].ToString());
                     user1.InvitedId = Convert.ToInt32(reader["invited_id"].ToString());
                     user1.Email = reader["email"].ToString();
@@ -639,9 +640,9 @@ namespace ContainerTrackingWebApi.Controllers
         }
 
 
-        private Users setUserDetails(DataTable dTable)
+        private Models.Users setUserDetails(DataTable dTable)
         {
-            Users users = new Users();
+            Models.Users users = new Models.Users();
             if (dTable != null && dTable.Rows.Count > 0)
             {
 
