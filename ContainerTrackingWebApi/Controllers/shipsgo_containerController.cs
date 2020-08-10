@@ -535,6 +535,7 @@ namespace ContainerTrackingWebApi.Controllers
                                     if (Convert.ToDateTime(first_arrival).ToString("yyyy-MM-dd") == Convert.ToDateTime(dataRow["first_arrival"].ToString()).ToString("yyyy-MM-dd"))
                                         first_arrival = Convert.ToDateTime(d).ToString("yyyy-MM-dd");
                                 }
+
                                 else if (eventData.Count == 1)
                                 {
                                     string d = eventData.FirstOrDefault().date;
