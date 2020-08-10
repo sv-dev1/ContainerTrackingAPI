@@ -174,7 +174,7 @@ namespace ContainerTrackingWebApi.Controllers
                 }
 
                 conn.Close();
-                getDataFromApi(shipsgo.UserId.ToString(), shipsgo.ContainerNo, shipsgo.ShippingLine, out string responseText);    
+                getDataFromApi(shipsgo.UserId.ToString(), shipsgo.ContainerNo, shipsgo.ShippingLine, out string responseText);
                 return Ok(JsonConvert.SerializeObject(1));
             }
 
@@ -445,7 +445,6 @@ namespace ContainerTrackingWebApi.Controllers
 
                                 IEnumerable<ContainerTrack> containerTracking = containerTracking1.OrderBy(pet => eventData.Select(x => x.location).Distinct().ToList().IndexOf(pet.id));
 
-
                                 IList<JToken> route = root["data"]["route"].Children().ToList();
                                 //IList<routeEvents> prepoll = route.Select(result => JsonConvert
                                 //                  .DeserializeObject<routeEvents>(
@@ -457,6 +456,17 @@ namespace ContainerTrackingWebApi.Controllers
                                 else
                                 {
                                     departure = Convert.ToDateTime(dataRow["departure"].ToString()).ToString("yyyy-MM-dd");
+                                    try
+                                    {
+                                        //if (Convert.ToInt32(root["data"]["route"]["pol"]["location"]) == containerTracking.Min(x => x.id))
+                                        if (!string.IsNullOrEmpty(root["data"]["route"]["pol"]["date"].ToString()))
+                                        {
+                                            departure = Convert.ToDateTime(root["data"]["route"]["pol"]["date"].ToString()).ToString("yyyy-MM-dd");
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                    }
                                 }
                                 if (Convert.ToDateTime(dataRow["arrival"].ToString()).ToString("yyyy-MM-dd") == "1970-01-01" && root["data"]["route"]["postpod"]["date"].ToString() != "")
                                 {
@@ -465,20 +475,28 @@ namespace ContainerTrackingWebApi.Controllers
                                 else
                                 {
                                     arrival = Convert.ToDateTime(dataRow["arrival"].ToString()).ToString("yyyy-MM-dd");
+                                    //arrival = "N/A";
                                 }
 
                                 //Discharged
+                                List<EventList> _eventlist = new List<EventList>();
+                                try
+                                {
+                                    _eventlist = JsonConvert.DeserializeObject<List<EventList>>(JsonConvert.SerializeObject(events));
+                                }
+                                catch (Exception)
+                                {
+                                }
                                 if (string.IsNullOrEmpty(root["data"]["route"]["postpod"]["date"].ToString()) && Convert.ToDateTime(dataRow["arrival"].ToString()).ToString("yyyy-MM-dd") == "1970-01-01")
                                 {
                                     try
                                     {
-                                        List<EventList> _eventlist = JsonConvert.DeserializeObject<List<EventList>>(JsonConvert.SerializeObject(events));
                                         DateTime? date = _eventlist.Where(x => x.Location == containerTracking.LastOrDefault()?.id && x.Description.ToLower() == "discharge").FirstOrDefault()?.Date;
                                         if (date.HasValue)
                                             arrival = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
                                         else
                                         {
-                                            date = _eventlist.Where(x => x.Description.ToLower() == "cargo received" || x.Description == "Discharged").FirstOrDefault()?.Date;
+                                            date = _eventlist.Where(x => x.Description.ToLower() == "cargo received" || x.Description.ToLower().Contains("dischar")).FirstOrDefault()?.Date;
                                             if (date.HasValue)
                                                 arrival = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
                                         }
@@ -506,6 +524,27 @@ namespace ContainerTrackingWebApi.Controllers
                                 if (first_arrival == "" || first_arrival == null)
                                 {
                                     first_arrival = arrival;
+                                }
+
+                                //REACHED OR DISCHARGED
+                                if (_eventlist.Count == 1)
+                                {
+                                    DateTime d = _eventlist.FirstOrDefault().Date;
+                                    arrival = Convert.ToDateTime(d).ToString("yyyy-MM-dd");
+                                    departure = Convert.ToDateTime(d).ToString("yyyy-MM-dd");
+                                    if (Convert.ToDateTime(first_arrival).ToString("yyyy-MM-dd") == Convert.ToDateTime(dataRow["first_arrival"].ToString()).ToString("yyyy-MM-dd"))
+                                        first_arrival = Convert.ToDateTime(d).ToString("yyyy-MM-dd");
+                                }
+                                else if (eventData.Count == 1)
+                                {
+                                    string d = eventData.FirstOrDefault().date;
+                                    arrival = Convert.ToDateTime(d).ToString("yyyy-MM-dd");
+                                    departure = Convert.ToDateTime(d).ToString("yyyy-MM-dd");
+                                    first_arrival = Convert.ToDateTime(d).ToString("yyyy-MM-dd");
+                                }
+                                if (Convert.ToDateTime(first_arrival) > DateTime.UtcNow)
+                                {
+                                    arrival = Convert.ToDateTime(first_arrival).ToString("yyyy-MM-dd");
                                 }
 
                                 //IList<JToken> route1 = root["data"]["route"]["pol"].Children().ToList();
