@@ -547,7 +547,7 @@ namespace ContainerTrackingWebApi.Controllers
                                 {
                                     arrival = Convert.ToDateTime(first_arrival).ToString("yyyy-MM-dd");
                                 }
-
+                                //Replace arrival by first_arrival + 1
                                 if (arrival == "1970-01-01")
                                 {
                                     arrival = Convert.ToDateTime(first_arrival).AddDays(1).ToString("yyyy-MM-dd");
