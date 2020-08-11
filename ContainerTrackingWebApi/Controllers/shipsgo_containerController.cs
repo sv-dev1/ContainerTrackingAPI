@@ -548,6 +548,10 @@ namespace ContainerTrackingWebApi.Controllers
                                     arrival = Convert.ToDateTime(first_arrival).ToString("yyyy-MM-dd");
                                 }
 
+                                if (arrival == "1970-01-01")
+                                {
+                                    arrival = Convert.ToDateTime(first_arrival).AddDays(1).ToString("yyyy-MM-dd");
+                                }
                                 //IList<JToken> route1 = root["data"]["route"]["pol"].Children().ToList();
                                 //IList<pol> poll = route.Select(result => JsonConvert
                                 //                  .DeserializeObject<pol>(
