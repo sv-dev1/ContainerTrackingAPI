@@ -496,7 +496,7 @@ namespace ContainerTrackingWebApi.Controllers
                                             arrival = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
                                         else
                                         {
-                                            date = _eventlist.Where(x => x.Description.ToLower() == "cargo received" || x.Description.ToLower().Contains("dischar")).FirstOrDefault()?.Date;
+                                            date = _eventlist.Where(x => x.Description.ToLower() == "cargo received" || x.Description.ToLower().Contains("dischar")).LastOrDefault()?.Date;
                                             if (date.HasValue)
                                                 arrival = Convert.ToDateTime(date).ToString("yyyy-MM-dd");
                                         }
@@ -547,11 +547,31 @@ namespace ContainerTrackingWebApi.Controllers
                                 {
                                     arrival = Convert.ToDateTime(first_arrival).ToString("yyyy-MM-dd");
                                 }
-                                //Replace arrival by first_arrival + 1
+
+
+                                if (first_arrival == "1970-01-01" && arrival != "1970-01-01")
+                                {
+                                    first_arrival = arrival;
+                                }
+
+                                if (arrival == "1970-01-01" && first_arrival != "1970-01-01")
+                                {
+                                    arrival = first_arrival;
+                                }
+                                if (departure == "1970-01-01")
+                                {
+                                    departure = "N/A";
+                                }
                                 if (arrival == "1970-01-01")
                                 {
-                                    arrival = Convert.ToDateTime(first_arrival).AddDays(1).ToString("yyyy-MM-dd");
+                                    arrival = "N/A";
                                 }
+                                if (first_arrival == "1970-01-01")
+                                {
+                                    first_arrival = "N/A";
+                                }
+
+
                                 //IList<JToken> route1 = root["data"]["route"]["pol"].Children().ToList();
                                 //IList<pol> poll = route.Select(result => JsonConvert
                                 //                  .DeserializeObject<pol>(
@@ -691,12 +711,16 @@ namespace ContainerTrackingWebApi.Controllers
                                     _ro["destination"] = containerTracking.LastOrDefault()?.name;
                                 }
                                 _ro["daysbeforearrival"] = 0;
-                                DateTime dateTime = Convert.ToDateTime(_ro["arrival"]);
+                                DateTime? dateTime = null;
+                                if (arrival != "N/A")
+                                {
+                                    dateTime = Convert.ToDateTime(_ro["arrival"]);
+                                }
                                 if (dateTime < DateTime.Now)//container has reached its destination
                                 {
                                     Updatecontainersts(user_id, container_no);
                                 }
-                                if (_ro["arrival"].ToString() != "")
+                                if (_ro["arrival"].ToString() != "" && arrival != "N/A")
                                 {
                                     TimeSpan difference = Convert.ToDateTime(_ro["arrival"]).Date - DateTime.Now.Date;
                                     int days = (int)difference.TotalDays;
