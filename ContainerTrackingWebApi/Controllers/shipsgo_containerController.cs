@@ -514,8 +514,20 @@ namespace ContainerTrackingWebApi.Controllers
                                 {
                                     first_arrival = Convert.ToDateTime(dataRow["first_arrival"].ToString()).ToString("yyyy-MM-dd");
                                 }
-                                string _val = Convert.ToString(root["data"]["route"]["prepol"]["location"]) == string.Empty ? null : Convert.ToString(root["data"]["route"]["prepol"]["location"]);
-                                depLocation = Convert.ToInt32(_val);
+                                try
+                                {
+                                    string _val = Convert.ToString(root["data"]["route"]["prepol"]["location"]) == string.Empty ? null : Convert.ToString(root["data"]["route"]["prepol"]["location"]);
+                                    if (_val == null)
+                                    {
+                                        _val = Convert.ToString(root["data"]["route"]["pol"]["location"]);
+                                    }
+                                    depLocation = Convert.ToInt32(_val);
+                                }
+                                catch (Exception)
+                                {
+
+                                    depLocation = Convert.ToInt32(containerTracking.FirstOrDefault()?.id);
+                                }
                                 if (root["data"]["route"]["postpod"]["location"].ToString() != "")
                                 {
                                     arriLocation = Convert.ToInt32(root["data"]["route"]["postpod"]["location"].ToString());
@@ -737,6 +749,11 @@ namespace ContainerTrackingWebApi.Controllers
                                     sendGateoutemail(container_no, origin, destination, user_id);
                                 }
                                 sendArrivalEmail(user_id, container_no, dataRow["po_no"].ToString(), _ro["shipping_line"].ToString(), _ro["daysbeforearrival"].ToString(), _ro["arrival"].ToString());
+                                //If destination is Null assign the last as destination.
+                                if (_ro["origin"] == DBNull.Value)
+                                {
+                                    _ro["origin"] = containerTracking.FirstOrDefault()?.name;
+                                }
                             }
                             else
                             {
