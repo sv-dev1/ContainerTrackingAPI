@@ -569,19 +569,7 @@ namespace ContainerTrackingWebApi.Controllers
             //string userid = "";
             SqlConnection conn = new SqlConnection(connection);
             conn.Open();
-            //SqlCommand cmdApi = new SqlCommand("SELECT TOP 1 * FROM users where company_name='" + name + "'", conn);
-            //SqlDataAdapter MyAdapter1 = new SqlDataAdapter();
-            //MyAdapter1.SelectCommand = cmdApi;
-            //DataTable dTab = new DataTable();
-            //MyAdapter1.Fill(dTab);
-            //if (dTab != null && dTab.Rows.Count > 0)
-            //{
-            //    foreach (DataRow item1 in dTab.Rows)
-            //    {
-            //        userid = item1["id"].ToString();
-            //    }
-            //}
-            SqlCommand cmd = new SqlCommand("update shipsgo_container1 set user_id='" + name + "' where po_no ='" + po_no + "' and container_no='" + container_no + "' and user_id='" + user_id + "'", conn);
+            SqlCommand cmd = new SqlCommand("update shipsgo_container set user_id='" + name + "' where po_no ='" + po_no + "' and container_no='" + container_no + "' and user_id='" + user_id + "'", conn);
             int i = cmd.ExecuteNonQuery();
             conn.Close();
 
